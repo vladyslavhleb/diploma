@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  # Node.js application
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    env_file:
+      - ./backend/.env
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: myappdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    networks:
+      - myapp-network
+    profiles:
+      - prod
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      GRAPHQL_HOST: http://backend/graphql
+    networks:
+      - myapp-network
+    profiles:
+      - prod
+
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: myappdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    networks:
+      - myapp-network
+    profiles:
+      - db
+      - prod
+
+networks:
+  myapp-network:
+    driver: bridge
+
