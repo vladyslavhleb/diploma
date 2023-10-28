@@ -24,6 +24,9 @@ export class Register {
 
   @Field(() => String)
   password: string;
+
+  @Field(() => String)
+  public_key: string;
 }
 
 @ObjectType()

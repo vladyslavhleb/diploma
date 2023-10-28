@@ -32,6 +32,9 @@ export class User {
   @Column()
   refresh_token: string;
 
+  @Column()
+  public_key: string;
+
   @ManyToMany(() => Chat, (chat) => chat.users)
   @JoinTable()
   chats: Chat[];
