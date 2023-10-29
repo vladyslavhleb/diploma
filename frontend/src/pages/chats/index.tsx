@@ -119,7 +119,7 @@ const Chats = () => {
           {/* Sidebar content */}
           <Card>
             <Card.Body>
-              <Form.Label>Private key</Form.Label>
+              <Form.Label style={{ fontWeight: 'bold' }}>Private key</Form.Label>
               <Form.Control type="file" required name="file" />
               <Form.Text id="passwordHelpBlock" muted>
                 Upload your private key to decrypt messages
@@ -129,7 +129,7 @@ const Chats = () => {
           <Card>
             <Card.Body>
               <Form onSubmit={createChat}>
-                <Form.Label>Create a chat</Form.Label>
+                <Form.Label style={{ fontWeight: 'bold' }}>Create a chat</Form.Label>
                 <Form.Group className="w-100" controlId="validationFormikUsername2">
                   <InputGroup hasValidation>
                     <Form.Control
@@ -149,11 +149,11 @@ const Chats = () => {
 
           <Card>
             <Card.Body>
-              <Form.Label>Your Chats</Form.Label>
+              <Form.Label style={{ fontWeight: 'bold' }}>Your Chats</Form.Label>
               {/* List of chats */}
               <ul className="chat-list">
                 {getUserData?.getUser?.chats?.map((chat) => (
-                  <li key={chat.chat_id} onClick={() => navigate(`/chats/${chat.chat_id}`)}>
+                  <li key={chat.chat_id} onClick={() => navigate(`/chats/${chat.chat_id}`)} style={{ margin: 0 }}>
                     Chat with {chat.users.filter((user) => user.user_id !== getUserData?.getUser?.user_id)[0].nickname}
                   </li>
                 ))}

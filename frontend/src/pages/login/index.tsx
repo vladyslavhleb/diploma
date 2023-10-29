@@ -110,7 +110,7 @@ function Login() {
               </InputGroup>
             </Form.Group>
             <Form.Group className="w-100" style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
-              <Button type="submit">Register</Button>
+              <Button type="submit">Login</Button>
             </Form.Group>
             <Form.Text className="text-danger" style={responseError ? { display: 'block' } : { display: 'none' }}>
               {responseError}
