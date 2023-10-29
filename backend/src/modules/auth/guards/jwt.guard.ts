@@ -21,16 +21,18 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       payload = await this.authService.verify(token);
+
       user = await this.userService.find({
         where: { user_id: payload.user_id },
       });
+
       request['user'] = user;
+
+      if (user.token_valid_from.getTime() > payload.iat * 1000) {
+        throw ErrorHandler(HttpStatus.FORBIDDEN, ERROR_MESSAGES.INVALIDATED_TOKEN);
+      }
     } catch (e) {
       throw ErrorHandler(HttpStatus.FORBIDDEN, ERROR_MESSAGES.INVALID_TOKEN);
-    }
-
-    if (user.token_valid_from.getTime() > payload.iat * 1000) {
-      throw ErrorHandler(HttpStatus.FORBIDDEN, ERROR_MESSAGES.INVALIDATED_TOKEN);
     }
 
     return true;

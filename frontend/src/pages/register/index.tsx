@@ -30,7 +30,7 @@ function Register() {
 
   const [responseError, setResponseError] = useState<string>('');
 
-  const [register, { error }] = useMutation<RegisterResponse>(REGISTER, {
+  const [register, { error }] = useMutation<{ register: RegisterResponse }>(REGISTER, {
     errorPolicy: 'all',
     update: (cache, { data }) => {
       cache.writeQuery({
@@ -60,13 +60,16 @@ function Register() {
     }
 
     try {
-      await register({ variables: { ...payload, public_key: publicKey } });
+      const { data } = await register({ variables: { ...payload, public_key: publicKey } });
+      if (data?.register.access_token) {
+        localStorage.setItem('access_token', data?.register.access_token);
+      }
 
       if (privateKey) {
         downloadBinaryStringAsFile(privateKey, 'privateKey.pem');
       }
 
-      navigate('/chats');
+      setTimeout(() => navigate('/chats/0'), 1000);
     } catch (e: any) {
       setResponseError(JSON.parse(e?.message).message.message);
     }

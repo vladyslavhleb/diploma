@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
-const LOGIN = gql`
+export const LOGIN = gql`
   mutation LoginUser($nickname: String!, $password: String!) {
     login(nickname: $nickname, password: $password) {
       access_token
@@ -27,19 +27,16 @@ function Login() {
 
   const [responseError, setResponseError] = useState<string>('');
 
-  const [login, { error }] = useMutation<LoginResponse>(LOGIN, {
-    update: (cache, { data }) => {
-      cache.writeQuery({
-        query: LOGIN,
-        data: data,
-      });
-    },
-  });
+  const [login, { error }] = useMutation<{ login: LoginResponse }>(LOGIN);
 
   const submit = async (payload: any) => {
     try {
-      await login({ variables: payload });
-      navigate('/chats');
+      const { data } = await login({ variables: payload });
+
+      if (data?.login.access_token) {
+        localStorage.setItem('access_token', data.login.access_token);
+      }
+      setTimeout(() => navigate('/chats/0'), 1000);
     } catch (e: any) {
       setResponseError(JSON.parse(e?.message).message.message);
     }

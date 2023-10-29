@@ -73,7 +73,7 @@ body {
   max-height: 87.5vh; /* Limit the chat message height with scrolling */
   overflow-y: auto; /* Add vertical scroll for chat messages */
   display: flex;
-  flex-direction: column; /* Set the width of the scrollbar */
+  flex-direction: column-reverse; /* Set the width of the scrollbar */
   scroll-behavior: smooth;
 }
 
@@ -94,6 +94,7 @@ body {
   background-color: #0088cc;
   color: #fff;
   align-self: flex-end;
+  text-align: right;
   margin: 0 1rem 1rem 0;
 }
 .user-message p{

@@ -14,7 +14,7 @@ import { User } from '../users/users.repository';
 @Entity({ name: 'chats' })
 export class Chat {
   @PrimaryGeneratedColumn('uuid')
-  chat_id: number;
+  chat_id: string;
 
   @ManyToMany(() => User, (user) => user.chats)
   @JoinTable()

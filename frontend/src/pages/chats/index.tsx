@@ -1,42 +1,86 @@
 import moment from 'moment';
 import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 
+import { gql, useMutation, useQuery } from '@apollo/client';
+
+import { ChatResponse, MessageResponse, UserResponse } from '../../__generated__/graphql';
 import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+
+export const SEND_MESSAGE = gql`
+  mutation sendMessage($chat_id: String!, $payload: String!) {
+    sendMessage(chat_id: $chat_id, payload: $payload) {
+      sender {
+        user_id
+      }
+      message_id
+      payload
+      created_at
+    }
+  }
+`;
+
+export const CREATE_CHAT = gql`
+  mutation createChat($receiverNickname: String!) {
+    createChat(receiverNickname: $receiverNickname) {
+      chat_id
+    }
+  }
+`;
+
+const GET_USER = gql`
+  query getUser {
+    getUser {
+      nickname
+      user_id
+      chats {
+        chat_id
+        users {
+          user_id
+          nickname
+        }
+      }
+    }
+  }
+`;
+
+export const GET_MESSAGES = gql`
+  query getMessageHistory($chat_id: String!, $limit: Float!, $offset: Float!) {
+    getMessageHistory(chat_id: $chat_id, limit: $limit, offset: $offset) {
+      sender {
+        user_id
+        nickname
+      }
+      message_id
+      payload
+      created_at
+    }
+  }
+`;
 
 const Chats = () => {
   const chatMessagesRef = useRef<HTMLDivElement | null>(null);
-  // Mock chat messages
-  const [messages, setMessages] = useState([
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-    { id: 1, text: 'Hello!Hello!Hello!Hello!Hello!', sender: 'user', date: new Date() },
-    { id: 2, text: 'Hi thereHello!Hello!Hello!Hello!Hello!!', sender: 'other', date: new Date() },
-  ]);
+  const { chat_id } = useParams();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    refetch({ limit: 20, offset: 0, chat_id }).then((result) => {
+      setMessages(result.data.getMessageHistory);
+    });
+  }, [chat_id]);
+
+  const { data: getUserData } = useQuery<{ getUser: UserResponse }>(GET_USER, { fetchPolicy: 'no-cache' });
+  const { refetch } = useQuery<{ getMessageHistory: MessageResponse[] }>(GET_MESSAGES, {
+    fetchPolicy: 'no-cache',
+    variables: { limit: 20, offset: 0, chat_id },
+  });
+  const [sendMessageMutation] = useMutation<{ sendMessage: MessageResponse }>(SEND_MESSAGE);
+  const [createChatMutation] = useMutation<{ createChat: ChatResponse }>(CREATE_CHAT);
+
+  const [messages, setMessages] = useState<MessageResponse[]>([]);
 
   useEffect(() => {
     // Scroll to the bottom of the chat messages when the component mounts or when messages change
@@ -47,18 +91,25 @@ const Chats = () => {
 
   // State for the message input
   const [messageInput, setMessageInput] = useState('');
-  useEffect(() => {
-    console.log(messages);
-  }, [messages]);
-  const sendMessage = (e: FormEvent<HTMLFormElement>) => {
-    console.log('test');
+  const [nicknameInput, setNicknameInput] = useState('');
+
+  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (messageInput.trim() !== '') {
-      console.log('qweqweqe');
-      const newMessage = { id: messages.length + 1, text: messageInput, sender: 'user', date: new Date() };
-      setMessages([...messages, newMessage]);
-      setMessageInput('');
+    const payload = messageInput.trim();
+    if (payload !== '') {
+      const result = await sendMessageMutation({ variables: { chat_id, payload } });
+      if (result.data?.sendMessage) {
+        setMessages([result.data?.sendMessage, ...messages]);
+        setMessageInput('');
+      }
     }
+  };
+
+  const createChat = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const res = await createChatMutation({ variables: { receiverNickname: nicknameInput } });
+    const chat_id = res.data?.createChat.chat_id;
+    navigate(`/chats/${chat_id}`);
   };
 
   return (
@@ -77,14 +128,48 @@ const Chats = () => {
           </Card>
           <Card>
             <Card.Body>
-              <h2>Your Chats</h2>
+              <Form onSubmit={createChat}>
+                <Form.Label>Create a chat</Form.Label>
+                <Form.Group className="w-100" controlId="validationFormikUsername2">
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      type="text"
+                      placeholder="Receiver nickname"
+                      name="nickname"
+                      value={nicknameInput}
+                      onChange={(e) => setNicknameInput(e.target.value)}
+                    />
+                    <Form.Control.Feedback type="invalid" tooltip></Form.Control.Feedback>
+                    <Button type="submit">Start a chat</Button>
+                  </InputGroup>
+                </Form.Group>
+              </Form>
+            </Card.Body>
+          </Card>
+
+          <Card>
+            <Card.Body>
+              <Form.Label>Your Chats</Form.Label>
               {/* List of chats */}
               <ul className="chat-list">
-                <li>Chat 1</li>
-                <li>Chat 2</li>
-                <li>Chat 3</li>
+                {getUserData?.getUser?.chats?.map((chat) => (
+                  <li key={chat.chat_id} onClick={() => navigate(`/chats/${chat.chat_id}`)}>
+                    Chat with {chat.users.filter((user) => user.user_id !== getUserData?.getUser?.user_id)[0].nickname}
+                  </li>
+                ))}
                 {/* Add more chat items as needed */}
               </ul>
+            </Card.Body>
+          </Card>
+          <Card>
+            <Card.Body>
+              <Form.Group className="w-100" controlId="validationFormikUsername2">
+                <InputGroup hasValidation>
+                  <Button type="submit" variant="danger">
+                    Logout
+                  </Button>
+                </InputGroup>
+              </Form.Group>
             </Card.Body>
           </Card>
         </Col>
@@ -105,21 +190,26 @@ const Chats = () => {
               {/* Chat messages */}
               <div className="chat-messages" ref={chatMessagesRef}>
                 {messages.map((msg) => (
-                  <div key={msg.id} className={`message ${msg.sender === 'user' ? 'user-message' : 'other-message'}`}>
-                    {msg.text}
+                  <div
+                    key={msg.message_id}
+                    className={`message ${
+                      msg.sender?.user_id === getUserData?.getUser.user_id ? 'user-message' : 'other-message'
+                    }`}
+                  >
+                    {msg.payload}
                     <div className="message-date">
-                      <p>{moment(msg.date).format('HH:mm:ss')}</p>
+                      <p>{moment(msg.created_at).format('HH:mm:ss')}</p>
                     </div>
                   </div>
                 ))}
               </div>
-              {/* Message input */}
 
               <Form className="message-control" style={{ backgroundColor: 'white' }} onSubmit={sendMessage}>
                 <Form.Group controlId="formBasicEmail" style={{ width: '95%' }}>
                   <Form.Control
                     type="text"
                     placeholder="Type your message"
+                    value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                   />
                 </Form.Group>
@@ -129,15 +219,6 @@ const Chats = () => {
                   </Button>
                 </Form.Group>
               </Form>
-              {/*<input*/}
-              {/*  type="text"*/}
-              {/*  placeholder="Type your message..."*/}
-              {/*  value={messageInput}*/}
-              {/*  onChange={(e) => setMessageInput(e.target.value)}*/}
-              {/*/>*/}
-              {/*<Button variant="primary" onClick={sendMessage}>*/}
-              {/*  Send*/}
-              {/*</Button>*/}
             </Card.Body>
           </Card>
         </Col>

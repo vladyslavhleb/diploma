@@ -21,8 +21,11 @@ export class ChatsResolver {
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => ChatResponse)
-  async createChat(@Args('receiverId', { type: () => String }) receiverId: string, @GetUser() { user_id }: JwtPayload) {
-    return this.commandBus.execute(new CreateChatAction(user_id, receiverId));
+  async createChat(
+    @Args('receiverNickname', { type: () => String }) receiverNickname: string,
+    @GetUser() { user_id }: JwtPayload,
+  ) {
+    return this.commandBus.execute(new CreateChatAction(user_id, receiverNickname));
   }
   @UseGuards(GqlAuthGuard)
   @Mutation(() => DeleteChatResponse)

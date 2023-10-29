@@ -6,7 +6,7 @@ import { User } from '../users/users.repository';
 @Entity({ name: 'messages', orderBy: { created_at: 'DESC' } })
 export class Message {
   @PrimaryGeneratedColumn('uuid')
-  message_id: number;
+  message_id: string;
 
   @Column()
   payload: string;

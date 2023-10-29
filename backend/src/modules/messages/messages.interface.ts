@@ -9,7 +9,7 @@ import { UserResponse } from '../users/users.interface';
 @ObjectType()
 export class MessageResponse {
   @Field(() => String)
-  message_id: number;
+  message_id: string;
 
   @Field(() => String)
   payload: string;
@@ -33,7 +33,7 @@ export class GetMessageHistory {
   offset: number;
 
   @Field(() => String)
-  chat_id: number;
+  chat_id: string;
 }
 
 @ArgsType()

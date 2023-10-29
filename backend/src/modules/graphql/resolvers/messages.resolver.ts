@@ -21,6 +21,9 @@ export class MessagesResolver {
   @UseGuards(GqlAuthGuard)
   @Query(() => [MessageResponse])
   async getMessageHistory(@Args() { chat_id, limit, offset }: GetMessageHistory) {
+    if (chat_id === '0') {
+      return [];
+    }
     return this.commandBus.execute(new GetMessageHistoryAction(chat_id, limit, offset));
   }
 

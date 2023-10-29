@@ -1,8 +1,24 @@
 import { persistCache } from 'apollo3-cache-persist';
 
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
+
+import { setContext } from '@apollo/client/link/context';
 
 const cache = new InMemoryCache();
+
+const httpLink = createHttpLink({
+  uri: 'http://localhost/graphql',
+});
+
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem('access_token');
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    },
+  };
+});
 
 persistCache({
   cache,
@@ -10,7 +26,7 @@ persistCache({
 });
 
 const client = new ApolloClient({
-  uri: 'http://localhost/graphql', // Replace with your GraphQL server URL
+  link: authLink.concat(httpLink),
   cache,
 });
 

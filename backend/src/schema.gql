@@ -51,6 +51,6 @@ type Mutation {
   refreshToken(refreshToken: String!): LoginResponse!
   register(nickname: String!, password: String!, public_key: String!): RegisterResponse!
   sendMessage(chat_id: String!, payload: String!): MessageResponse!
-  createChat(receiverId: String!): ChatResponse!
+  createChat(receiverNickname: String!): ChatResponse!
   dropChat(chat_id: String!): DeleteChatResponse!
 }
