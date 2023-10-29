@@ -1,7 +1,7 @@
 import * as formik from 'formik';
 import * as forge from 'node-forge';
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 
 import { gql, useMutation } from '@apollo/client';
@@ -9,7 +9,6 @@ import { gql, useMutation } from '@apollo/client';
 import { RegisterResponse } from '../../__generated__/graphql';
 import { downloadBinaryStringAsFile } from '../../helpers/downloadData';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 
@@ -42,8 +41,8 @@ function Register() {
   });
 
   const schema = yup.object().shape({
-    nickname: yup.string().required().min(8).max(16),
-    password: yup.string().required().min(8),
+    nickname: yup.string().min(8).max(16),
+    password: yup.string().min(8),
   });
 
   const submit = async (payload: any) => {
@@ -60,24 +59,18 @@ function Register() {
       publicKey = fileData.split(' ')[1];
     }
 
-    await register({ variables: { ...payload, public_key: publicKey } });
+    try {
+      await register({ variables: { ...payload, public_key: publicKey } });
 
-    if (privateKey) {
-      downloadBinaryStringAsFile(privateKey, 'privateKey.pem');
-    }
+      if (privateKey) {
+        downloadBinaryStringAsFile(privateKey, 'privateKey.pem');
+      }
 
-    navigate('/chats');
-
-    if (error) {
-      setResponseError(JSON.parse(error.message).message.message);
+      navigate('/chats');
+    } catch (e: any) {
+      setResponseError(JSON.parse(e?.message).message.message);
     }
   };
-
-  useEffect(() => {
-    if (error) {
-      setResponseError(JSON.parse(error.message).message.message);
-    }
-  }, [error]);
 
   const handleFileChange = (event: any) => {
     const file = event.target.files[0];
@@ -101,6 +94,7 @@ function Register() {
         width: '100%',
         height: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
       }}
@@ -183,8 +177,8 @@ function Register() {
                 {errors.file}
               </Form.Control.Feedback>
             </Form.Group>
-            <Form.Group as={Col} md="4" style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
-              <Button type="submit">Submit form</Button>
+            <Form.Group className="w-100" style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+              <Button type="submit">Register</Button>
             </Form.Group>
             <Form.Text className="text-danger" style={responseError ? { display: 'block' } : { display: 'none' }}>
               {responseError}
@@ -192,22 +186,15 @@ function Register() {
           </Form>
         )}
       </Formik>
+      <Form.Text id="passwordHelpBlock2" muted>
+        Already have an account? Log in
+        <Link to="/login"> here</Link>
+      </Form.Text>
     </div>
   );
 }
 
 export default Register;
-
-// import { gql, useMutation } from '@apollo/client';
-//
-// const REGISTER = gql`
-//   mutation RegisterUser($nickname: String!, $password: String!, $public_key: String!) {
-//     register(nickname: $nickname, password: $password, public_key: $public_key) {
-//       access_token
-//       refresh_token
-//     }
-//   }
-// `;
 
 // const [formData, setFormData] = useState({
 //     nickname: '',

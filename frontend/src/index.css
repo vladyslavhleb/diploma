@@ -11,3 +11,134 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#root{
+  width: 100%;
+  height: 100vh;
+}
+
+/* App.css */
+
+/* General styles for the entire page */
+body {
+  background-color: #f4f6f9;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-page {
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* Styles for the sidebar */
+.sidebar {
+  background-color: #0088cc;
+  color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.chat-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.chat-list li {
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.chat-list li:hover {
+  background-color: #0077bb;
+}
+
+/* Styles for the chat window */
+.chat-window {
+  background-color: #fff;
+  padding: 0 20px 0 20px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.chat-messages {
+  max-height: 87.5vh; /* Limit the chat message height with scrolling */
+  overflow-y: auto; /* Add vertical scroll for chat messages */
+  display: flex;
+  flex-direction: column; /* Set the width of the scrollbar */
+  scroll-behavior: smooth;
+}
+
+.message {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+.message-control {
+  padding: 0 1rem 1rem 1rem;
+  border-radius: 10px;
+  display: flex;
+}
+
+.user-message {
+  background-color: #0088cc;
+  color: #fff;
+  align-self: flex-end;
+  margin: 0 1rem 1rem 0;
+}
+.user-message p{
+  text-align: right;
+  opacity: 0.5;
+}
+
+.other-message p{
+  text-align: left;
+  opacity: 0.5;
+}
+
+.other-message {
+  background-color: #eee;
+  color: #333;
+  align-self: flex-start;
+  margin: 0 0 1rem 1rem;
+}
+
+.message-date{
+  position: relative;
+  right: 5px;
+  bottom: 5px;
+}
+
+.message-date{
+  position: relative;
+  right: 0;
+  bottom: 0;
+}
+
+.message-date p{
+ margin: 0;
+  font-size: 10px;
+}
+
+
+
+
+/* Make the input and button responsive */
+@media (max-width: 576px) {
+  input[type="text"],
+  button.btn-primary {
+    width: 70%;
+  }
+}
+
+
