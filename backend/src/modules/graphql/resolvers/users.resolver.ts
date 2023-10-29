@@ -39,7 +39,7 @@ export class UsersResolver {
   async register(@Args() data: Register) {
     try {
       RegisterSchema.parse(data);
-      return this.commandBus.execute(new RegisterAction(data.nickname, data.password));
+      return this.commandBus.execute(new RegisterAction(data.nickname, data.password, data.public_key));
     } catch (e) {
       if (e instanceof ZodError) {
         throw ErrorHandler(HttpStatus.UNPROCESSABLE_ENTITY, ERROR_MESSAGES.ZOD_ERROR(e));

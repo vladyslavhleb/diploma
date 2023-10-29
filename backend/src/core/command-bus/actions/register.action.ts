@@ -17,7 +17,11 @@ export class RegisterResponse {
 }
 
 export class RegisterAction {
-  constructor(public readonly nickname: User['nickname'], public readonly password: User['password']) {}
+  constructor(
+    public readonly nickname: User['nickname'],
+    public readonly password: User['password'],
+    public readonly public_key: User['public_key'],
+  ) {}
 }
 
 @CommandHandler(RegisterAction)
@@ -28,8 +32,10 @@ export class RegisterHandler implements ICommandHandler<RegisterAction> {
     const hashedPassword = await this.authService.hashPassword(userInfo.password);
 
     const duplicated = await this.userService.find({ where: { nickname: userInfo.nickname } });
+
+    console.log(duplicated);
     if (duplicated) {
-      throw ErrorHandler(HttpStatus.BAD_REQUEST, ERROR_MESSAGES.ALREADY_EXISTS);
+      throw ErrorHandler(HttpStatus.BAD_REQUEST, ERROR_MESSAGES.ALREADY_EXISTS('This User'));
     }
 
     const refreshToken = this.authService.createRefreshToken();
