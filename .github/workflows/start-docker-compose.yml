@@ -36,15 +36,15 @@ jobs:
           tar -xzf src/src.tar.gz
           rm -rf src/src.tar.gz
 
-    # - name: Stop Old docker compose
-    #   uses: appleboy/ssh-action@v1.0.0
-    #   with:
-    #     host: ${{ secrets.SCP_HOST }}
-    #     username: ${{ secrets.SCP_USERNAME }}
-    #     password: ${{ secrets.SCP_PASSWORD }}
-    #     script: |
-    #       docker stop $(docker ps -qa)
-    #       docker rm $(docker ps -qa)
+    - name: Stop Old docker compose
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SCP_HOST }}
+        username: ${{ secrets.SCP_USERNAME }}
+        password: ${{ secrets.SCP_PASSWORD }}
+        script: |
+          docker stop $(docker ps -qa)
+          docker rm $(docker ps -qa)
 
     - name: Start Docker compose
       uses: appleboy/ssh-action@v1.0.0
