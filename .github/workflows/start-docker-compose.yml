@@ -36,5 +36,6 @@ jobs:
           cd src
           ls
           tar -xzf src.tar.gz
+          docker stop $(docker ps -a -q)
           docker rm $(docker ps -a -q)
           docker compose --profile=prod up
