@@ -19,11 +19,11 @@ jobs:
           chmod 600 ssh_key.pem
 
       - name: Copy Files to Remote Instance
-        run: scp -i ssh_key.pem -o StrictHostKeyChecking=no -r ./path/to/files user@your-instance-ip:/path/on/instance
+        run: scp -i ssh_key.pem -o StrictHostKeyChecking=no -r ./src ubuntu@3.81.60.8:/src
 
       - name: SSH into Remote Instance and Run Docker Compose
         run: |
-          ssh -i ssh_key.pem -o StrictHostKeyChecking=no user@your-instance-ip << 'EOF'
-            cd /path/on/instance
+          ssh -i ssh_key.pem -o StrictHostKeyChecking=no ubuntu@3.81.60.8 << 'EOF'
+            cd /src
             docker-compose up -d
           EOF
