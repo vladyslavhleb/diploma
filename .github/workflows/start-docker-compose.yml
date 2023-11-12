@@ -40,4 +40,4 @@ jobs:
         host: ${{ secrets.SCP_HOST }}
         username: ${{ secrets.SCP_USERNAME }}
         password: ${{ secrets.SCP_PASSWORD }}
-        script: sudo docker compose --profile=prod -f src/src up
+        script: sudo docker compose --profile=prod -f src up
