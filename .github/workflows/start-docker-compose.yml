@@ -25,8 +25,7 @@ jobs:
         run: |
           ssh -i ssh_key.pem -o StrictHostKeyChecking=no ubuntu@3.81.60.8 << 'EOF'
             ls
-            rm -rf src
-            cd src
-            docker rm -f $(docker ps -aq)
+            rm -rf ./src
+            cd ./src
             docker-compose up --profile=prod up
           EOF
