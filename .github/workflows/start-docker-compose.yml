@@ -1,4 +1,4 @@
-name: Deploy to Remote Server
+name: Deploy and Run Docker Compose
 
 on:
   push:
@@ -13,21 +13,17 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Copy Repository Data to Remote Server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.REMOTE_SSH_PORT }}
-          script: |
-            rsync -avz --exclude .git . ${{ secrets.REMOTE_USERNAME }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}
-
-      - name: Start Docker Compose on Remote Server
+      - name: Install SSH key
         run: |
-          ssh ${{ secrets.REMOTE_USERNAME }}@${{ secrets.REMOTE_HOST }} 'cd ${{ secrets.REMOTE_PATH }} && docker-compose up -d'
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
+          chmod 600 ssh_key.pem
+
+      - name: Copy Files to Remote Instance
+        run: scp -i ssh_key.pem -o StrictHostKeyChecking=no -r ./path/to/files user@your-instance-ip:/path/on/instance
+
+      - name: SSH into Remote Instance and Run Docker Compose
+        run: |
+          ssh -i ssh_key.pem -o StrictHostKeyChecking=no user@your-instance-ip << 'EOF'
+            cd /path/on/instance
+            docker-compose up -d
+          EOF
