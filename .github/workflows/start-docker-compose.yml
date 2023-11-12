@@ -19,7 +19,7 @@ jobs:
           chmod 400 ssh_key.pem
 
       - name: Copy Files to Remote Instance
-        run: scp -i ssh_key.pem -r ./src ubuntu@3.81.60.8:~
+        run: scp -i ssh_key.pem -o StrictHostKeyChecking=no -r ./src ubuntu@3.81.60.8:~
 
       - name: SSH into Remote Instance and Run Docker Compose
         run: |
