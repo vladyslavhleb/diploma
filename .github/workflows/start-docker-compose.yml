@@ -26,6 +26,12 @@ jobs:
         source: "src.tar.gz"
         target: "~/src"
 
-    - name: SSH into remote server and unarchive
-      run: |
-        ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.SCP_USERNAME }}@${{ secrets.SCP_HOST }} "cd /path/on/remote/server && tar -xzf src.tar.gz"
+    - name: multiple command
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SCP_HOST }}
+        username: ${{ secrets.SCP_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          whoami
+          ls
