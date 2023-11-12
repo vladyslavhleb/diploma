@@ -127,26 +127,3 @@ function Login() {
 }
 
 export default Login;
-
-// const [formData, setFormData] = useState({
-//     nickname: '',
-//     password: '',
-//     public_key: '123123123',
-// });
-//
-// const [register, { data, loading, error }] = useMutation(REGISTER, { errorPolicy: 'all' });
-// if (error) return <div>Erroe</div>;
-//
-// const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-//     const { name, value } = e.target;
-//     setFormData({ ...formData, [name]: value });
-// };
-//
-// const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//
-//     const res = await register({ variables: formData });
-//     console.log(res);
-//     // Handle form submission here, e.g., send data to an API
-//     console.log('Form Data:', formData);
-// };

@@ -33,7 +33,6 @@ export class RegisterHandler implements ICommandHandler<RegisterAction> {
 
     const duplicated = await this.userService.find({ where: { nickname: userInfo.nickname } });
 
-    console.log(duplicated);
     if (duplicated) {
       throw ErrorHandler(HttpStatus.BAD_REQUEST, ERROR_MESSAGES.ALREADY_EXISTS('This User'));
     }

@@ -161,8 +161,6 @@ const Chats = () => {
     e.preventDefault();
     const payload = messageInput.trim();
 
-    console.log(getMessageHistoryData);
-
     const publicKey = getMessageHistoryData?.getMessageHistory.chat.users.filter(
       (user) => user.user_id !== getUserData?.getUser?.user_id,
     )[0].public_key as string;
