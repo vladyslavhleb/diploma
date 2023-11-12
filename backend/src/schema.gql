@@ -15,7 +15,12 @@ type LoginResponse {
 type UserResponse {
   user_id: String!
   nickname: String!
+  public_key: String!
   chats: [ChatResponse!]
+}
+
+type DepletedUserResponse {
+  user_id: String!
 }
 
 type ChatResponse {
@@ -27,11 +32,15 @@ type DeleteChatResponse {
   status: Boolean!
 }
 
-type MessageResponse {
+type MessagesHistoryResponse {
+  chat: ChatResponse!
+  history: [MessageResponseForHistory!]
+}
+
+type MessageResponseForHistory {
   message_id: String!
   payload: String!
-  sender: UserResponse
-  chat: ChatResponse
+  sender: DepletedUserResponse
   created_at: DateTime!
 }
 
@@ -43,14 +52,14 @@ scalar DateTime
 type Query {
   getUser: UserResponse!
   getChats: String!
-  getMessageHistory(limit: Float!, offset: Float!, chat_id: String!): [MessageResponse!]!
+  getMessageHistory(limit: Float!, offset: Float!, chat_id: String!): MessagesHistoryResponse!
 }
 
 type Mutation {
   login(nickname: String!, password: String!): LoginResponse!
   refreshToken(refreshToken: String!): LoginResponse!
   register(nickname: String!, password: String!, public_key: String!): RegisterResponse!
-  sendMessage(chat_id: String!, payload: String!): MessageResponse!
+  sendMessage(chat_id: String!, payload: String!): MessageResponseForHistory!
   createChat(receiverNickname: String!): ChatResponse!
   dropChat(chat_id: String!): DeleteChatResponse!
 }

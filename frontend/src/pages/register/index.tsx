@@ -49,6 +49,7 @@ function Register() {
     const keyPair = forge.pki.rsa.generateKeyPair({ bits: 2048 });
 
     const privateKey = forge.pki.privateKeyToPem(keyPair.privateKey);
+
     let publicKey = forge.pki.publicKeyToPem(keyPair.publicKey);
 
     if (fileData) {
@@ -190,8 +191,8 @@ function Register() {
         )}
       </Formik>
       <Form.Text id="passwordHelpBlock2" muted>
-        Already have an account? Log in
-        <Link to="/login"> here</Link>
+        Already have an account? Log in&nbsp;
+        <Link to="/login">here</Link>
       </Form.Text>
     </div>
   );

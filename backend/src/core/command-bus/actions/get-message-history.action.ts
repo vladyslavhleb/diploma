@@ -1,7 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { Chat } from '../../../modules/chats/chats.repository';
-import { MessageResponse } from '../../../modules/messages/messages.interface';
+import { ChatsService } from '../../../modules/chats/chats.service';
+import { MessagesHistoryResponse } from '../../../modules/messages/messages.interface';
 import { MessagesService } from '../../../modules/messages/messages.service';
 
 export class GetMessageHistoryAction {
@@ -14,9 +15,13 @@ export class GetMessageHistoryAction {
 
 @CommandHandler(GetMessageHistoryAction)
 export class GetMessageHistoryHandler implements ICommandHandler<GetMessageHistoryAction> {
-  constructor(private readonly messageService: MessagesService) {}
+  constructor(private readonly messageService: MessagesService, private readonly chatService: ChatsService) {}
 
-  async execute({ chat_id, limit, offset }: GetMessageHistoryAction): Promise<MessageResponse[]> {
-    return this.messageService.getMessages(chat_id, { limit, offset });
+  async execute({ chat_id, limit, offset }: GetMessageHistoryAction): Promise<MessagesHistoryResponse> {
+    const [chat, history] = await Promise.all([
+      this.chatService.chatRepository.findOne({ where: { chat_id }, relations: { users: true } }),
+      this.messageService.getMessages(chat_id, { limit, offset }),
+    ]);
+    return { chat, history };
   }
 }

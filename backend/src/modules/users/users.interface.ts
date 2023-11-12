@@ -55,6 +55,15 @@ export class UserResponse {
   @Field(() => String)
   nickname: string;
 
+  @Field(() => String)
+  public_key: string;
+
   @Field(() => [ChatResponse], { nullable: true })
   chats?: ChatResponse[];
+}
+
+@ObjectType()
+export class DepletedUserResponse {
+  @Field(() => String)
+  user_id: string;
 }

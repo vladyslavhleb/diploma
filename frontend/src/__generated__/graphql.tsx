@@ -9,12 +9,12 @@ export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' |
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  DateTime: { input: any; output: any };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  DateTime: { input: any; output: any; }
 };
 
 export type ChatResponse = {
@@ -28,19 +28,29 @@ export type DeleteChatResponse = {
   status: Scalars['Boolean']['output'];
 };
 
+export type DepletedUserResponse = {
+  __typename?: 'DepletedUserResponse';
+  user_id: Scalars['String']['output'];
+};
+
 export type LoginResponse = {
   __typename?: 'LoginResponse';
   access_token: Scalars['String']['output'];
   refresh_token: Scalars['String']['output'];
 };
 
-export type MessageResponse = {
-  __typename?: 'MessageResponse';
-  chat?: Maybe<ChatResponse>;
+export type MessageResponseForHistory = {
+  __typename?: 'MessageResponseForHistory';
   created_at: Scalars['DateTime']['output'];
   message_id: Scalars['String']['output'];
   payload: Scalars['String']['output'];
-  sender?: Maybe<UserResponse>;
+  sender?: Maybe<DepletedUserResponse>;
+};
+
+export type MessagesHistoryResponse = {
+  __typename?: 'MessagesHistoryResponse';
+  chat: ChatResponse;
+  history?: Maybe<Array<MessageResponseForHistory>>;
 };
 
 export type Mutation = {
@@ -50,31 +60,37 @@ export type Mutation = {
   login: LoginResponse;
   refreshToken: LoginResponse;
   register: RegisterResponse;
-  sendMessage: MessageResponse;
+  sendMessage: MessageResponseForHistory;
 };
 
+
 export type MutationCreateChatArgs = {
-  receiverId: Scalars['String']['input'];
+  receiverNickname: Scalars['String']['input'];
 };
+
 
 export type MutationDropChatArgs = {
   chat_id: Scalars['String']['input'];
 };
+
 
 export type MutationLoginArgs = {
   nickname: Scalars['String']['input'];
   password: Scalars['String']['input'];
 };
 
+
 export type MutationRefreshTokenArgs = {
   refreshToken: Scalars['String']['input'];
 };
+
 
 export type MutationRegisterArgs = {
   nickname: Scalars['String']['input'];
   password: Scalars['String']['input'];
   public_key: Scalars['String']['input'];
 };
+
 
 export type MutationSendMessageArgs = {
   chat_id: Scalars['String']['input'];
@@ -84,9 +100,10 @@ export type MutationSendMessageArgs = {
 export type Query = {
   __typename?: 'Query';
   getChats: Scalars['String']['output'];
-  getMessageHistory: Array<MessageResponse>;
+  getMessageHistory: MessagesHistoryResponse;
   getUser: UserResponse;
 };
+
 
 export type QueryGetMessageHistoryArgs = {
   chat_id: Scalars['String']['input'];
@@ -102,39 +119,41 @@ export type RegisterResponse = {
 
 export type UserResponse = {
   __typename?: 'UserResponse';
-  chats?: Maybe<Array<ChatResponse>>;
+  chats: Array<ChatResponse>;
   nickname: Scalars['String']['output'];
+  public_key: Scalars['String']['output'];
   user_id: Scalars['String']['output'];
 };
 
+
+
 export type ResolverTypeWrapper<T> = Promise<T> | T;
+
 
 export type ResolverWithResolve<TResult, TParent, TContext, TArgs> = {
   resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
 };
-export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
-  | ResolverFn<TResult, TParent, TContext, TArgs>
-  | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> = ResolverFn<TResult, TParent, TContext, TArgs> | ResolverWithResolve<TResult, TParent, TContext, TArgs>;
 
 export type ResolverFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Promise<TResult> | TResult;
 
 export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => AsyncIterable<TResult> | Promise<AsyncIterable<TResult>>;
 
 export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
 
 export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
@@ -158,14 +177,10 @@ export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TCo
 export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
   parent: TParent,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => Maybe<TTypes> | Promise<Maybe<TTypes>>;
 
-export type IsTypeOfResolverFn<T = {}, TContext = {}> = (
-  obj: T,
-  context: TContext,
-  info: GraphQLResolveInfo,
-) => boolean | Promise<boolean>;
+export type IsTypeOfResolverFn<T = {}, TContext = {}> = (obj: T, context: TContext, info: GraphQLResolveInfo) => boolean | Promise<boolean>;
 
 export type NextResolverFn<T> = () => Promise<T>;
 
@@ -174,8 +189,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   parent: TParent,
   args: TArgs,
   context: TContext,
-  info: GraphQLResolveInfo,
+  info: GraphQLResolveInfo
 ) => TResult | Promise<TResult>;
+
+
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
@@ -183,9 +200,11 @@ export type ResolversTypes = {
   ChatResponse: ResolverTypeWrapper<ChatResponse>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DeleteChatResponse: ResolverTypeWrapper<DeleteChatResponse>;
+  DepletedUserResponse: ResolverTypeWrapper<DepletedUserResponse>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   LoginResponse: ResolverTypeWrapper<LoginResponse>;
-  MessageResponse: ResolverTypeWrapper<MessageResponse>;
+  MessageResponseForHistory: ResolverTypeWrapper<MessageResponseForHistory>;
+  MessagesHistoryResponse: ResolverTypeWrapper<MessagesHistoryResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
   RegisterResponse: ResolverTypeWrapper<RegisterResponse>;
@@ -199,9 +218,11 @@ export type ResolversParentTypes = {
   ChatResponse: ChatResponse;
   DateTime: Scalars['DateTime']['output'];
   DeleteChatResponse: DeleteChatResponse;
+  DepletedUserResponse: DepletedUserResponse;
   Float: Scalars['Float']['output'];
   LoginResponse: LoginResponse;
-  MessageResponse: MessageResponse;
+  MessageResponseForHistory: MessageResponseForHistory;
+  MessagesHistoryResponse: MessagesHistoryResponse;
   Mutation: {};
   Query: {};
   RegisterResponse: RegisterResponse;
@@ -209,10 +230,7 @@ export type ResolversParentTypes = {
   UserResponse: UserResponse;
 };
 
-export type ChatResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['ChatResponse'] = ResolversParentTypes['ChatResponse'],
-> = {
+export type ChatResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['ChatResponse'] = ResolversParentTypes['ChatResponse']> = {
   chat_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   users?: Resolver<Array<ResolversTypes['UserResponse']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -222,106 +240,61 @@ export interface DateTimeScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'DateTime';
 }
 
-export type DeleteChatResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['DeleteChatResponse'] = ResolversParentTypes['DeleteChatResponse'],
-> = {
+export type DeleteChatResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteChatResponse'] = ResolversParentTypes['DeleteChatResponse']> = {
   status?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type LoginResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['LoginResponse'] = ResolversParentTypes['LoginResponse'],
-> = {
+export type DepletedUserResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['DepletedUserResponse'] = ResolversParentTypes['DepletedUserResponse']> = {
+  user_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type LoginResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResponse'] = ResolversParentTypes['LoginResponse']> = {
   access_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   refresh_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MessageResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['MessageResponse'] = ResolversParentTypes['MessageResponse'],
-> = {
-  chat?: Resolver<Maybe<ResolversTypes['ChatResponse']>, ParentType, ContextType>;
+export type MessageResponseForHistoryResolvers<ContextType = any, ParentType extends ResolversParentTypes['MessageResponseForHistory'] = ResolversParentTypes['MessageResponseForHistory']> = {
   created_at?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   message_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   payload?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  sender?: Resolver<Maybe<ResolversTypes['UserResponse']>, ParentType, ContextType>;
+  sender?: Resolver<Maybe<ResolversTypes['DepletedUserResponse']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type MutationResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation'],
-> = {
-  createChat?: Resolver<
-    ResolversTypes['ChatResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationCreateChatArgs, 'receiverId'>
-  >;
-  dropChat?: Resolver<
-    ResolversTypes['DeleteChatResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationDropChatArgs, 'chat_id'>
-  >;
-  login?: Resolver<
-    ResolversTypes['LoginResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationLoginArgs, 'nickname' | 'password'>
-  >;
-  refreshToken?: Resolver<
-    ResolversTypes['LoginResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationRefreshTokenArgs, 'refreshToken'>
-  >;
-  register?: Resolver<
-    ResolversTypes['RegisterResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationRegisterArgs, 'nickname' | 'password' | 'public_key'>
-  >;
-  sendMessage?: Resolver<
-    ResolversTypes['MessageResponse'],
-    ParentType,
-    ContextType,
-    RequireFields<MutationSendMessageArgs, 'chat_id' | 'payload'>
-  >;
+export type MessagesHistoryResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['MessagesHistoryResponse'] = ResolversParentTypes['MessagesHistoryResponse']> = {
+  chat?: Resolver<ResolversTypes['ChatResponse'], ParentType, ContextType>;
+  history?: Resolver<Maybe<Array<ResolversTypes['MessageResponseForHistory']>>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query'],
-> = {
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  createChat?: Resolver<ResolversTypes['ChatResponse'], ParentType, ContextType, RequireFields<MutationCreateChatArgs, 'receiverNickname'>>;
+  dropChat?: Resolver<ResolversTypes['DeleteChatResponse'], ParentType, ContextType, RequireFields<MutationDropChatArgs, 'chat_id'>>;
+  login?: Resolver<ResolversTypes['LoginResponse'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'nickname' | 'password'>>;
+  refreshToken?: Resolver<ResolversTypes['LoginResponse'], ParentType, ContextType, RequireFields<MutationRefreshTokenArgs, 'refreshToken'>>;
+  register?: Resolver<ResolversTypes['RegisterResponse'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'nickname' | 'password' | 'public_key'>>;
+  sendMessage?: Resolver<ResolversTypes['MessageResponseForHistory'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'chat_id' | 'payload'>>;
+};
+
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getChats?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  getMessageHistory?: Resolver<
-    Array<ResolversTypes['MessageResponse']>,
-    ParentType,
-    ContextType,
-    RequireFields<QueryGetMessageHistoryArgs, 'chat_id' | 'limit' | 'offset'>
-  >;
+  getMessageHistory?: Resolver<ResolversTypes['MessagesHistoryResponse'], ParentType, ContextType, RequireFields<QueryGetMessageHistoryArgs, 'chat_id' | 'limit' | 'offset'>>;
   getUser?: Resolver<ResolversTypes['UserResponse'], ParentType, ContextType>;
 };
 
-export type RegisterResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['RegisterResponse'] = ResolversParentTypes['RegisterResponse'],
-> = {
+export type RegisterResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RegisterResponse'] = ResolversParentTypes['RegisterResponse']> = {
   access_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   refresh_token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserResponseResolvers<
-  ContextType = any,
-  ParentType extends ResolversParentTypes['UserResponse'] = ResolversParentTypes['UserResponse'],
-> = {
-  chats?: Resolver<Maybe<Array<ResolversTypes['ChatResponse']>>, ParentType, ContextType>;
+export type UserResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserResponse'] = ResolversParentTypes['UserResponse']> = {
+  chats?: Resolver<Array<ResolversTypes['ChatResponse']>, ParentType, ContextType>;
   nickname?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  public_key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user_id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -330,10 +303,13 @@ export type Resolvers<ContextType = any> = {
   ChatResponse?: ChatResponseResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DeleteChatResponse?: DeleteChatResponseResolvers<ContextType>;
+  DepletedUserResponse?: DepletedUserResponseResolvers<ContextType>;
   LoginResponse?: LoginResponseResolvers<ContextType>;
-  MessageResponse?: MessageResponseResolvers<ContextType>;
+  MessageResponseForHistory?: MessageResponseForHistoryResolvers<ContextType>;
+  MessagesHistoryResponse?: MessagesHistoryResponseResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RegisterResponse?: RegisterResponseResolvers<ContextType>;
   UserResponse?: UserResponseResolvers<ContextType>;
 };
+

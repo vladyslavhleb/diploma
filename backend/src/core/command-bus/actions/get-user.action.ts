@@ -21,6 +21,6 @@ export class GetUserHandler implements ICommandHandler<GetUserAction> {
         chats: { users: true },
       },
     });
-    return _.pick(user, ['user_id', 'nickname', 'chats']);
+    return _.pick(user, ['user_id', 'nickname', 'chats', 'public_key']);
   }
 }

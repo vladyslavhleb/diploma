@@ -27,12 +27,17 @@ export class JwtAuthGuard implements CanActivate {
       });
 
       request['user'] = user;
-
-      if (user.token_valid_from.getTime() > payload.iat * 1000) {
+      if (parseInt(String(user.token_valid_from.getTime() / 1000)) > payload.iat) {
         throw ErrorHandler(HttpStatus.FORBIDDEN, ERROR_MESSAGES.INVALIDATED_TOKEN);
       }
     } catch (e) {
-      throw ErrorHandler(HttpStatus.FORBIDDEN, ERROR_MESSAGES.INVALID_TOKEN);
+      try {
+        if (JSON.parse(e.message).message.type === ERROR_MESSAGES.INVALIDATED_TOKEN.type) {
+          throw ErrorHandler(HttpStatus.FORBIDDEN, ERROR_MESSAGES.INVALIDATED_TOKEN);
+        }
+      } catch (e) {
+        throw ErrorHandler(HttpStatus.FORBIDDEN, ERROR_MESSAGES.INVALID_TOKEN);
+      }
     }
 
     return true;

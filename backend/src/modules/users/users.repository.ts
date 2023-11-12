@@ -36,7 +36,7 @@ export class User {
   public_key: string;
 
   @ManyToMany(() => Chat, (chat) => chat.users)
-  @JoinTable()
+  @JoinTable({ name: 'users_chats' })
   chats: Chat[];
 
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })

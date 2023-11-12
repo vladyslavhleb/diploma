@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { Chat } from '../../../modules/chats/chats.repository';
-import { MessageResponse } from '../../../modules/messages/messages.interface';
+import { MessageResponseForHistory } from '../../../modules/messages/messages.interface';
 import { Message } from '../../../modules/messages/messages.repository';
 import { MessagesService } from '../../../modules/messages/messages.service';
 import { User } from '../../../modules/users/users.repository';
@@ -18,7 +18,7 @@ export class CreateMessageAction {
 export class CreateMessageHandler implements ICommandHandler<CreateMessageAction> {
   constructor(private readonly messageService: MessagesService) {}
 
-  async execute({ payload, sender, chat_id }: CreateMessageAction): Promise<MessageResponse> {
+  async execute({ payload, sender, chat_id }: CreateMessageAction): Promise<MessageResponseForHistory> {
     return this.messageService.messageRepository.save({ payload, chat: { chat_id }, sender: { user_id: sender } });
   }
 }

@@ -7,7 +7,12 @@ import { GetMessageHistoryAction } from '../../../core/command-bus/actions/get-m
 import { GetUser } from '../../../decorators/get-user.decorator';
 import { JwtPayload } from '../../auth/auth.service';
 import { GqlAuthGuard } from '../../auth/guards/jwt.guard';
-import { GetMessageHistory, MessageResponse, SendMessage } from '../../messages/messages.interface';
+import {
+  GetMessageHistory,
+  MessageResponseForHistory,
+  MessagesHistoryResponse,
+  SendMessage,
+} from '../../messages/messages.interface';
 
 @Resolver()
 export class MessagesResolver {
@@ -19,16 +24,18 @@ export class MessagesResolver {
   }
 
   @UseGuards(GqlAuthGuard)
-  @Query(() => [MessageResponse])
+  @Query(() => MessagesHistoryResponse)
   async getMessageHistory(@Args() { chat_id, limit, offset }: GetMessageHistory) {
     if (chat_id === '0') {
-      return [];
+      return { chat: { chat_id: '0' }, history: [] };
     }
-    return this.commandBus.execute(new GetMessageHistoryAction(chat_id, limit, offset));
+    const res = await this.commandBus.execute(new GetMessageHistoryAction(chat_id, limit, offset));
+    console.log(res);
+    return res;
   }
 
   @UseGuards(GqlAuthGuard)
-  @Mutation(() => MessageResponse)
+  @Mutation(() => MessageResponseForHistory)
   async sendMessage(@Args() { chat_id, payload }: SendMessage, @GetUser() { user_id }: JwtPayload) {
     return this.commandBus.execute(new CreateMessageAction(payload, chat_id, user_id));
   }

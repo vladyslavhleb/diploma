@@ -119,8 +119,8 @@ function Login() {
         )}
       </Formik>
       <Form.Text id="passwordHelpBlock2" muted>
-        Don't have an account? Register
-        <Link to="/register"> here</Link>
+        Don't have an account? Register&nbsp;
+        <Link to="/register">here</Link>
       </Form.Text>
     </div>
   );
