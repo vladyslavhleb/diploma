@@ -22,19 +22,22 @@ jobs:
       with:
         host: ${{ secrets.SCP_HOST }}
         username: ${{ secrets.SCP_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        password: ${{ secrets.SCP_PASSWORD }}
         source: "src.tar.gz"
         target: "~/src"
+
+    - name: Unpack archive
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.SCP_HOST }}
+        username: ${{ secrets.SCP_USERNAME }}
+        password: ${{ secrets.SCP_PASSWORD }}
+        script: tar -xzf src/src.tar.gz
 
     - name: multiple command
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: ${{ secrets.SCP_HOST }}
         username: ${{ secrets.SCP_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd src
-          ls
-          tar -xzf src.tar.gz
-          cd src
-          sudo docker compose --profile=prod up
+        password: ${{ secrets.SCP_PASSOWRD }}
+        script: sudo docker compose --profile=prod -f src/src up
