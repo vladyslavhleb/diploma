@@ -33,7 +33,7 @@ jobs:
         username: ${{ secrets.SCP_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd src
           ls
           tar -xzf src.tar.gz
+          cd src
           sudo docker compose --profile=prod up
