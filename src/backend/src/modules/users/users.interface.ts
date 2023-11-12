@@ -58,8 +58,8 @@ export class UserResponse {
   @Field(() => String)
   public_key: string;
 
-  @Field(() => [ChatResponse], { nullable: true })
-  chats?: ChatResponse[];
+  @Field(() => [ChatResponse], { defaultValue: [] })
+  chats: ChatResponse[];
 }
 
 @ObjectType()

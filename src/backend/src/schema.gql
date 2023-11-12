@@ -16,7 +16,7 @@ type UserResponse {
   user_id: String!
   nickname: String!
   public_key: String!
-  chats: [ChatResponse!]
+  chats: [ChatResponse!]!
 }
 
 type DepletedUserResponse {

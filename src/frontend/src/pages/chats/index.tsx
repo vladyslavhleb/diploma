@@ -106,7 +106,7 @@ const Chats = () => {
     GET_MESSAGES,
     {
       fetchPolicy: 'no-cache',
-      skip: true,
+      skip: chat_id === '0',
       variables: { limit: 20, offset: 0, chat_id },
     },
   );
@@ -160,6 +160,8 @@ const Chats = () => {
   const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const payload = messageInput.trim();
+
+    console.log(getMessageHistoryData);
 
     const publicKey = getMessageHistoryData?.getMessageHistory.chat.users.filter(
       (user) => user.user_id !== getUserData?.getUser?.user_id,
