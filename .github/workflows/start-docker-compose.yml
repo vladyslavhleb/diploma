@@ -45,6 +45,7 @@ jobs:
         script: |
           docker stop $(docker ps -qa)
           docker rm $(docker ps -qa)
+          docker rmi -f $(docker images -q)
 
     - name: Start Docker compose
       uses: appleboy/ssh-action@v1.0.0
