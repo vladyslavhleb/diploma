@@ -35,3 +35,4 @@ jobs:
         script: |
           cd src
           ls
+          tar -xzf src.tar.gz
