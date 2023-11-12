@@ -52,5 +52,5 @@ jobs:
         host: ${{ secrets.SCP_HOST }}
         username: ${{ secrets.SCP_USERNAME }}
         password: ${{ secrets.SCP_PASSWORD }}
-        script: docker compose --profile=prod -f src/docker-compose.yaml up
+        script: docker compose --profile=prod -f src/docker-compose.yaml up -d
 
