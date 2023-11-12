@@ -24,6 +24,8 @@ jobs:
       - name: SSH into Remote Instance and Run Docker Compose
         run: |
           ssh -i ssh_key.pem -o StrictHostKeyChecking=no ubuntu@3.81.60.8 << 'EOF'
+            ls
+            rm -rf /src
             cd /src
             docker-compose up -d
           EOF
