@@ -1,4 +1,5 @@
-name: Deploy and Run Docker Compose
+
+name: Transfer src folder
 
 on:
   push:
@@ -6,26 +7,25 @@ on:
       - main
 
 jobs:
-  deploy:
+  transfer-src:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Install SSH key
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key.pem
-          chmod 400 ssh_key.pem
+    - name: Archive src folder
+      run: tar -czf src.tar.gz src
 
-      - name: Copy Files to Remote Instance
-        run: scp -i ssh_key.pem -o StrictHostKeyChecking=no -r ./src ubuntu@3.81.60.8:~
+    - name: Copy via SCP with SSH key
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SCP_HOST }}
+        username: ${{ secrets.SCP_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "src.tar.gz"
+        target: "~/src"
 
-      - name: SSH into Remote Instance and Run Docker Compose
-        run: |
-          ssh -i ssh_key.pem -o StrictHostKeyChecking=no ubuntu@3.81.60.8 << 'EOF'
-            ls
-            rm -rf ~/src
-            cd ~/src
-            docker-compose up --profile=prod up
-          EOF
+    - name: SSH into remote server and unarchive
+      run: |
+        ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.SCP_USERNAME }}@${{ secrets.SCP_HOST }} "cd /path/on/remote/server && tar -xzf src.tar.gz"
