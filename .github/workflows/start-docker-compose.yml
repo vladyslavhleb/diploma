@@ -32,7 +32,9 @@ jobs:
         host: ${{ secrets.SCP_HOST }}
         username: ${{ secrets.SCP_USERNAME }}
         password: ${{ secrets.SCP_PASSWORD }}
-        script: tar -xzf src/src.tar.gz
+        script: |
+          tar -xzf src/src.tar.gz
+          rm -rf src/src.tar.gz
 
     - name: multiple command
       uses: appleboy/ssh-action@v1.0.0
@@ -40,4 +42,6 @@ jobs:
         host: ${{ secrets.SCP_HOST }}
         username: ${{ secrets.SCP_USERNAME }}
         password: ${{ secrets.SCP_PASSWORD }}
-        script: sudo docker compose --profile=prod -f src up
+        script: |
+          docker compose --profile=prod -f src/docker-compose.yaml up | exit 0
+
