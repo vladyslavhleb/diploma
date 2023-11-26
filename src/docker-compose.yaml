@@ -32,7 +32,7 @@ services:
     depends_on:
       - backend
     environment:
-      GRAPHQL_HOST: http://backend/graphql
+      REACT_APP_GRAPHQL_HOST: http://localhost:4000/graphql
     networks:
       - myapp-network
     profiles:
