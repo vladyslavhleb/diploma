@@ -23,7 +23,7 @@ services:
     networks:
       - myapp-network
     profiles:
-      - prod
+      - production
 
   frontend:
     build:
@@ -38,7 +38,7 @@ services:
     networks:
       - myapp-network
     profiles:
-      - prod
+      - production
 
   db:
     image: postgres:16
@@ -52,7 +52,7 @@ services:
       - myapp-network
     profiles:
       - db
-      - prod
+      - production
 
 networks:
   myapp-network:
